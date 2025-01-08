@@ -29,10 +29,14 @@ module "iam" {
 }
 
 module "bastion" {
-  source                   = "./bastion"
-  ami_id                   = "ami-01816d07b1128cd2d"
-  instance_type            = "t2.micro"
-  security_group_id        = module.security.security_group_id
-  subnet_id                = module.vpc.subnet_id
+  source                    = "./bastion"
+  ami_id                    = "ami-01816d07b1128cd2d"
+  instance_type             = "t2.micro"
+  security_group_id         = module.security.security_group_id
+  subnet_id                 = module.vpc.subnet_id
   iam_instance_profile_name = module.iam.instance_profile_name
+}
+
+module "s3" {
+  source = "./s3"
 }
