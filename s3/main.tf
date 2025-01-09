@@ -1,11 +1,3 @@
-/*
-I want there to be 4 objects in the S3 bucket:
-/public -> accessible via a public IP
-/team -> accessible only via the CLI by the users toto and tata
-/toto -> accessible only by toto
-/tata -> accessible only by tata
-*/
-
 resource "aws_s3_bucket" "my-unique-bucket-08012025-2128" {
   bucket = "my-unique-bucket-08012025-2128"
 
