@@ -72,6 +72,16 @@ resource "aws_s3_object" "hello_world_file" {
   ]
 }
 
+resource "aws_s3_object" "hello_world_toto_file" {
+  bucket = aws_s3_bucket.my-unique-bucket-08012025-2128.id
+  key    = "toto/hello_world.txt"
+  content = "Hello World"
+  content_type = "text/plain"
+  depends_on = [
+    aws_s3_object.toto_folder,
+  ]
+}
+
 resource "aws_s3_object" "team_folder" {
   bucket = aws_s3_bucket.my-unique-bucket-08012025-2128.id
   key    = "team/"
@@ -91,4 +101,9 @@ resource "aws_s3_object" "tata_folder" {
   key    = "tata/"
   acl    = "private"
   content_type = "application/x-directory"
+}
+
+output "bucket_name" {
+  description = "The name of the S3 bucket"
+  value       = aws_s3_bucket.my-unique-bucket-08012025-2128.id
 }
