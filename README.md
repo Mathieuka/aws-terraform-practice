@@ -12,3 +12,6 @@ terraform destroy
 
 terraform fmt
 terraform validate
+
+## cli
+aws-vault exec --no-session -- cloud_user terraform apply
