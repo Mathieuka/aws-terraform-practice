@@ -1,14 +1,14 @@
 // CloudFront
 locals {
-  s3_origin_id = aws_s3_bucket.my-unique-bucket-1234-2602-86978.id
+  s3_origin_id = var.s3_origin_id
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   depends_on = [
-    aws_s3_bucket.my-unique-bucket-1234-2602-86978,
+    var.s3_bucket,
   ]
   origin {
-    domain_name = aws_s3_bucket.my-unique-bucket-1234-2602-86978.bucket_regional_domain_name
+    domain_name = var.s3_bucket_regional_domain_name
     origin_id   = local.s3_origin_id
     origin_access_control_id = aws_cloudfront_origin_access_control.s3_OAC.id
   }
@@ -46,6 +46,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 }
 
+
+
 // CloudFront OAC
 resource "aws_cloudfront_origin_access_control" "s3_OAC" {
   name                              = "S3 OAC"
@@ -65,44 +67,11 @@ output "oac_etag" {
   description = "OAC ETag"
 }
 
-// S3 bucket
-resource "aws_s3_bucket" "my-unique-bucket-1234-2602-86978" {
-  bucket = "my-unique-bucket-1234-2602-86978"
-
-  tags = {
-    Name = "New Bucket"
-  }
+output "aws_cloudfront_distribution" {
+  value = aws_cloudfront_distribution.s3_distribution.arn
 }
 
-resource "aws_s3_object" "index" {
-  bucket       = aws_s3_bucket.my-unique-bucket-1234-2602-86978.id
-  key          = "index.html"
-  content      = <<-EOF
-  <h1>Hello World</h1>
-  EOF
-  content_type = "text/html"
-  depends_on   = [aws_s3_bucket.my-unique-bucket-1234-2602-86978]
-}
 
-resource "aws_s3_bucket_policy" "allow_oac_access_only" {
-  bucket = aws_s3_bucket.my-unique-bucket-1234-2602-86978.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid = "AllowCloudFrontServicePrincipalReadOnly"
-        Effect = "Allow"
-        Action = "s3:GetObject"
-        Principal = {
-          Service = "cloudfront.amazonaws.com"
-        }
-        Resource = "${aws_s3_bucket.my-unique-bucket-1234-2602-86978.arn}/*"
-        Condition = {
-          StringEquals = {
-            "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
-          }
-        }
-      }
-    ]
-  })
+output "cloudfront_distribution_value" {
+  value = aws_cloudfront_distribution.s3_distribution.arn
 }
